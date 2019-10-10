@@ -20,6 +20,7 @@ type userinfo struct {
 	username string
 	password string
 	email    string
+	funds    float32
 }
 
 //Have users set a username
@@ -36,7 +37,7 @@ func getuser() {
 
 }
 
-//have users set a password
-
-//Have the pairs stored in a map
-//Keep track of user data in a structure
+//keep track of user info in a postres db
+// if someone makes a new account, have it do insert into and add it
+// maybe create variables for account balance
+//by the way the docker is called proj0db
