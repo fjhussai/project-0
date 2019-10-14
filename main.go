@@ -65,3 +65,59 @@ func showAcctsTable(db *sql.DB) {
 		fmt.Println(acctnumber, uniqname, acctbalance, acct_type)
 	}
 }
+
+func whattodo() {
+	fmt.Println("What would you like to do today?")
+	fmt.Println("To check your account balance, choose 1")
+	fmt.Println("to make a deposit, choose 2")
+	fmt.Println("To make a withdrawal, choose 3")
+	fmt.Println("To open a new account, choose 4")
+	fmt.Println("To transfer funds between accounts, choose 5")
+
+	var choice int
+	fmt.Scanln(&choice)
+
+	switch choice {
+	case 1:
+		createacct(db)
+	}
+
+	fmt.Println("thank you for using piggy bank!")
+}
+
+//deposit is a function that will ask for an account number, get its balance, and then add to it
+
+/*
+func deposit() {
+	fmt.Println("hello. Please enter an account number")
+	var searchvalue string
+	fmt.Scanln(&searchvalue)
+
+	row := db.QueryRow("SELECT acctbalance FROM bank_accounts WHERE acct_number = $1", searchvalue)
+	var acctbalance float64
+	row.Scan(&acctbalance)
+	fmt.Println(acctbalance)
+}
+*/
+
+func createacct(db *sql.DB) {
+	var uniqname string
+	var userfirst string
+	var userlast string
+	var password string
+
+	fmt.Println("Please choose a unique username. Note that no one else can have the same username as you.")
+	fmt.Scan(&uniqname)
+
+	fmt.Println("Please enter your first name.")
+	fmt.Scan(&userfirst)
+
+	fmt.Println("Please enter your last name.")
+	fmt.Scan(&userlast)
+
+	fmt.Println("Please choose a password")
+	fmt.Scan(&password)
+
+	sqlStatement := `INSERT INTO user_accounts values ($1,$2,$3,$4,$5)`
+	db.Exec(sqlStatement, uniqname, userfirst, userlast, password, 0)
+}
