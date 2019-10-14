@@ -25,6 +25,8 @@ func main() {
 	}
 
 	ping(db)
+	showUserTable(db)
+	showAcctsTable(db)
 
 }
 
@@ -44,9 +46,22 @@ func showUserTable(db *sql.DB) {
 		var userfirst string
 		var userlast string
 		var password string
-		var funds float32
+		var funds float64
 
 		rows.Scan(&uniqname, &userfirst, &userlast, &password, &funds)
 		fmt.Println(uniqname, userfirst, userlast, funds)
+	}
+}
+
+func showAcctsTable(db *sql.DB) {
+	rows, _ := db.Query("SELECT * FROM bank_accounts")
+	for rows.Next() {
+		var acctnumber int
+		var uniqname string
+		var acctbalance float64
+		var acct_type string
+
+		rows.Scan(&acctnumber, &uniqname, &acctbalance, &acct_type)
+		fmt.Println(acctnumber, uniqname, acctbalance, acct_type)
 	}
 }
