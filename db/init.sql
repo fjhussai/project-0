@@ -9,7 +9,7 @@ insert into user_accounts values ('cardib', 'cardi', 'belcalis', 'bodakyellow', 
 
 
 CREATE TABLE bank_accounts (
-    acctnumber string primary key,
+    acctnumber integer primary key,
     uniqname varchar REFERENCES user_accounts(uniqname),
     acctbalance decimal,
     acct_type varchar);
@@ -17,12 +17,10 @@ CREATE TABLE bank_accounts (
 insert into bank_accounts values('cardib',54,'checking')
 
 
-/*
-CREATE TABLE employee_info (
-    emp_number INTEGER
-    emp_first VARCHAR
-    emp_last VARCHAR
-    emp_password VARCHAR
-)
 
-*/
+CREATE TABLE employee_info (
+    emp_number INTEGER,
+    emp_first VARCHAR,
+    emp_last VARCHAR,
+    emp_password VARCHAR,
+);

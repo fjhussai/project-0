@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"math/rand"
 
 	_ "github.com/lib/pq"
 )
@@ -27,6 +28,7 @@ func main() {
 	ping(db)
 	showUserTable(db)
 	showAcctsTable(db)
+	random()
 
 }
 
@@ -54,7 +56,7 @@ func showUserTable(db *sql.DB) {
 }
 
 func showAcctsTable(db *sql.DB) {
-	rows, _ := db.Query("SELECT * FROM bank_accounts")
+	rows, _ := db.Query(`SELECT * FROM bank_accounts`)
 	for rows.Next() {
 		var acctnumber int
 		var uniqname string
@@ -66,7 +68,7 @@ func showAcctsTable(db *sql.DB) {
 	}
 }
 
-func whattodo() {
+/* func whattodo() {
 	fmt.Println("What would you like to do today?")
 	fmt.Println("To check your account balance, choose 1")
 	fmt.Println("to make a deposit, choose 2")
@@ -84,6 +86,7 @@ func whattodo() {
 
 	fmt.Println("thank you for using piggy bank!")
 }
+*/
 
 //deposit is a function that will ask for an account number, get its balance, and then add to it
 
@@ -120,4 +123,11 @@ func createacct(db *sql.DB) {
 
 	sqlStatement := `INSERT INTO user_accounts values ($1,$2,$3,$4,$5)`
 	db.Exec(sqlStatement, uniqname, userfirst, userlast, password, 0)
+}
+
+// generates a pseudo-random number
+func random() {
+	fmt.Println(rand.Intn(10000))
+	fmt.Println(rand.Intn(10000))
+	fmt.Println(rand.Intn(10000))
 }
