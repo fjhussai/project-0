@@ -11,6 +11,7 @@ func greeter(){
 
 	if input = "customer" {
 //have them enter their login/password
+// or have them create an account
 	} else if input = "employee" {
 		//have the employee login stuff
 	} else {

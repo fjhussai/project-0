@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"math/rand"
+	"strconv"
 
 	_ "github.com/lib/pq"
 )
@@ -28,7 +29,7 @@ func main() {
 	ping(db)
 	showUserTable(db)
 	showAcctsTable(db)
-	random()
+	getacctnum()
 
 }
 
@@ -41,6 +42,7 @@ func ping(db *sql.DB) {
 	fmt.Println("Successfully connected!")
 }
 
+//this function prints out all the values in the user accounts tabel except password
 func showUserTable(db *sql.DB) {
 	rows, _ := db.Query("SELECT * FROM user_accounts")
 	for rows.Next() {
@@ -61,10 +63,10 @@ func showAcctsTable(db *sql.DB) {
 		var acctnumber int
 		var uniqname string
 		var acctbalance float64
-		var acct_type string
+		var accttype string
 
-		rows.Scan(&acctnumber, &uniqname, &acctbalance, &acct_type)
-		fmt.Println(acctnumber, uniqname, acctbalance, acct_type)
+		rows.Scan(&acctnumber, &uniqname, &acctbalance, &accttype)
+		fmt.Println(acctnumber, uniqname, acctbalance, accttype)
 	}
 }
 
@@ -103,6 +105,7 @@ func deposit() {
 }
 */
 
+//this is a function that creates user accounts
 func createacct(db *sql.DB) {
 	var uniqname string
 	var userfirst string
@@ -126,8 +129,14 @@ func createacct(db *sql.DB) {
 }
 
 // generates a pseudo-random number
-func random() {
-	fmt.Println(rand.Intn(10000))
-	fmt.Println(rand.Intn(10000))
-	fmt.Println(rand.Intn(10000))
+//find a way to put this into the acountid in bank accounts table
+
+func getacctnum() {
+	var num int
+	num = rand.Intn(10000)
+	fmt.Print(num)
+
+	s := strconv.Itoa(num)
+
+	db.Exec(`update user_accounts set acctnumber=num where uniqname = givenuniqname`)
 }
