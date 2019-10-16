@@ -2,8 +2,7 @@ CREATE TABLE user_accounts (
     uniqname varchar primary key,
     userfirst varchar,
     userlast varchar,
-    password varchar,
-    funds decimal);
+    password varchar);
 
 CREATE TABLE bank_accounts (
     acctnumber varchar primary key,
@@ -13,12 +12,12 @@ CREATE TABLE bank_accounts (
 
 insert into bank_accounts values('5464','cardib',54,'checking');
 
-insert into user_accounts values ('cardib', 'cardi', 'belcalis', 'bodakyellow', 54);
-insert into user_accounts values ('schrutefarms','dwight', 'schrute','password', 100);
-insert into user_accounts values ('BEASLEY', 'pamela', 'beasley','password', 84);
-insert into user_accounts values ('bigtuna', 'James','Halpert', 'password', 84);
-insert into user_accounts values ('sprinkles','angela','schrute','password', 5);
-insert into user_accounts values ('smartypants', 'oscar', 'martinez','password',100)
+insert into user_accounts values ('cardib', 'cardi', 'belcalis', 'bodakyellow');
+insert into user_accounts values ('schrutefarms','dwight', 'schrute','password');
+insert into user_accounts values ('BEASLEY', 'pamela', 'beasley','password');
+insert into user_accounts values ('bigtuna', 'James','Halpert', 'password');
+insert into user_accounts values ('sprinkles','angela','schrute','password');
+insert into user_accounts values ('smartypants', 'oscar', 'martinez','password')
 
 /*
 CREATE TABLE employee_info (

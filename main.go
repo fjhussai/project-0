@@ -3,6 +3,9 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"math/rand"
+	"strconv"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -27,7 +30,9 @@ func main() {
 	ping(db)
 	showUserTable(db)
 	showAcctsTable(db)
-
+	//userauth(db)
+	//createbankacct(db)
+	//deposit(db)
 }
 
 func ping(db *sql.DB) {
@@ -110,34 +115,63 @@ func createacct(db *sql.DB) {
 	db.Exec(sqlStatement, uniqname, userfirst, userlast, password, 0)
 }
 
+// this function creates a new bank account
+func createbankacct(db *sql.DB) {
+	var givenuniqname string
+	fmt.Println("Please enter your uniqname")
+	fmt.Scan(&givenuniqname)
+
+	acctnumber := getacctnum()
+	acctbalance := 0
+
+	var accttype string
+	fmt.Println("What kind of account is this? ex. 'checking'")
+	fmt.Scan(&accttype)
+
+	sqlStatement := `INSERT INTO bank_accounts values($1,$2,$3,$4)`
+	_, err := db.Exec(sqlStatement, acctnumber, givenuniqname, acctbalance, accttype)
+
+	if err != nil {
+		fmt.Print("An error occurred creating your account.", err)
+	}
+}
+
 // generates a pseudo-random number
 //find a way to put this into the acountid in bank accounts table
-/*
-func getacctnum() {
+
+func getacctnum() string {
+	rand.Seed(time.Now().UnixNano())
 	var num int
 	num = rand.Intn(10000)
-	fmt.Print(num)
+	fmt.Println(num)
 
-	s := strconv.Itoa(num)
-
-	db.Exec(`update user_accounts set acctnumber=num where uniqname = givenuniqname`)
+	acctnumstr := strconv.Itoa(num)
+	return acctnumstr
 }
-*/
 
 //deposit is a function that will ask for an account number, get its balance, and then add to it
-
-/*
-func deposit() {
+func deposit(db *sql.DB) {
 	fmt.Println("hello. Please enter an account number")
 	var searchvalue string
 	fmt.Scanln(&searchvalue)
 
-	row := db.QueryRow("SELECT acctbalance FROM bank_accounts WHERE acct_number = $1", searchvalue)
+	row := db.QueryRow("SELECT acctbalance FROM bank_accounts WHERE acctnumber = $1", searchvalue)
+
 	var acctbalance float64
-	row.Scan(&acctbalance)
-	fmt.Println(acctbalance)
+	err := row.Scan(&acctbalance)
+	fmt.Println("Your previous balance was ", acctbalance)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var depositamt float64
+	fmt.Println("how much would you like to deposit in this account?")
+	fmt.Scan(&depositamt)
+
+	newbalance := depositamt + acctbalance
+	db.Exec("UPDATE bank_accounts SET acctbalance = $1 WHERE acctnumber = $2", newbalance, searchvalue)
+	fmt.Println("Your new account balance is ", newbalance)
 }
-*/
 
 /*
 //this function looks up an account number and returns an account balance
@@ -154,7 +188,7 @@ func getacctbalance() {
 //Any function to deposit or withdraw should call this
 
 //this is a function to check your login info
-func userauth() {
+func userauth(db *sql.DB) {
 	var collectuniqname string
 	var collectpassword string
 
@@ -164,5 +198,22 @@ func userauth() {
 	fmt.Print("password:")
 	fmt.Scan(&collectpassword)
 
-	db.Query("SELECT password FROM user_acounts WHERE uniqname")
+	rows, err := db.Query("SELECT * FROM user_accounts WHERE uniqname = $1 AND password = $2", collectuniqname, collectpassword)
+	if err != nil {
+		panic(err)
+	}
+	for rows.Next() {
+		var uniqname string
+		var userfirst string
+		var userlast string
+		var password string
+		var funds float64
+
+		err = rows.Scan(&uniqname, &userfirst, &userlast, &password, &funds)
+		if err != nil {
+			fmt.Println("Error scanning row", err)
+			continue
+		}
+		fmt.Println("Welcome,", uniqname)
+	}
 }
