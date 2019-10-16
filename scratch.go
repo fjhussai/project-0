@@ -18,15 +18,3 @@ func greeter(){
 		fmt.Println("Please enter a valid input of either 'employee' or 'customer'.")
 	}
 }
-
-func authenticate( {
-	var givenuniqname string
-	var givenpass string
-	fmt.Print("uniqname:")
-	fmt.Scan(&givenuniqname)
-	fmt.Print("password:")
-	fmt.Scan(&givenpass)
-
-	sqlquery := `select uniqname from customer where uniqname=&givenuniqname`
-
-})

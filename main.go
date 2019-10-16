@@ -3,8 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"math/rand"
-	"strconv"
 
 	_ "github.com/lib/pq"
 )
@@ -29,7 +27,6 @@ func main() {
 	ping(db)
 	showUserTable(db)
 	showAcctsTable(db)
-	getacctnum()
 
 }
 
@@ -115,7 +112,7 @@ func createacct(db *sql.DB) {
 
 // generates a pseudo-random number
 //find a way to put this into the acountid in bank accounts table
-
+/*
 func getacctnum() {
 	var num int
 	num = rand.Intn(10000)
@@ -125,6 +122,7 @@ func getacctnum() {
 
 	db.Exec(`update user_accounts set acctnumber=num where uniqname = givenuniqname`)
 }
+*/
 
 //deposit is a function that will ask for an account number, get its balance, and then add to it
 
@@ -141,6 +139,8 @@ func deposit() {
 }
 */
 
+/*
+//this function looks up an account number and returns an account balance
 func getacctbalance() {
 	fmt.Println("Please enter an account number")
 	var givenacctnum string
@@ -149,4 +149,20 @@ func getacctbalance() {
 	for sqlcommand.Next() {
 
 	}
+}
+*/
+//Any function to deposit or withdraw should call this
+
+//this is a function to check your login info
+func userauth() {
+	var collectuniqname string
+	var collectpassword string
+
+	fmt.Print("uniqname:")
+	fmt.Scan(&collectuniqname)
+
+	fmt.Print("password:")
+	fmt.Scan(&collectpassword)
+
+	db.Query("SELECT password FROM user_acounts WHERE uniqname")
 }
