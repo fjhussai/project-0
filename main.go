@@ -90,21 +90,6 @@ func showAcctsTable(db *sql.DB) {
 }
 */
 
-//deposit is a function that will ask for an account number, get its balance, and then add to it
-
-/*
-func deposit() {
-	fmt.Println("hello. Please enter an account number")
-	var searchvalue string
-	fmt.Scanln(&searchvalue)
-
-	row := db.QueryRow("SELECT acctbalance FROM bank_accounts WHERE acct_number = $1", searchvalue)
-	var acctbalance float64
-	row.Scan(&acctbalance)
-	fmt.Println(acctbalance)
-}
-*/
-
 //this is a function that creates user accounts
 func createacct(db *sql.DB) {
 	var uniqname string
@@ -139,4 +124,29 @@ func getacctnum() {
 	s := strconv.Itoa(num)
 
 	db.Exec(`update user_accounts set acctnumber=num where uniqname = givenuniqname`)
+}
+
+//deposit is a function that will ask for an account number, get its balance, and then add to it
+
+/*
+func deposit() {
+	fmt.Println("hello. Please enter an account number")
+	var searchvalue string
+	fmt.Scanln(&searchvalue)
+
+	row := db.QueryRow("SELECT acctbalance FROM bank_accounts WHERE acct_number = $1", searchvalue)
+	var acctbalance float64
+	row.Scan(&acctbalance)
+	fmt.Println(acctbalance)
+}
+*/
+
+func getacctbalance() {
+	fmt.Println("Please enter an account number")
+	var givenacctnum string
+	fmt.Scan(&givenacctnum)
+	sqlcommand := db.Query(`select acctbalance from bank_accounts where acctnumber = givenacctnum`)
+	for sqlcommand.Next() {
+
+	}
 }
