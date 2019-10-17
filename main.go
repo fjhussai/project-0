@@ -98,11 +98,12 @@ func startup(db *sql.DB) {
 func userwhattodo(db *sql.DB) {
 
 	fmt.Println("What would you like to do today?")
-	fmt.Println("To check your account balance, choose 1")
-	fmt.Println("to make a deposit, choose 2")
-	fmt.Println("To make a withdrawal, choose 3")
-	fmt.Println("To open a new account, choose 4")
-	fmt.Println("To create a joint account, choose 5")
+	fmt.Println("[1] Check your account balance")
+	fmt.Println("[2] Make a deposit")
+	fmt.Println("[3] Make a withdrawal")
+	fmt.Println("[4] Open a new account")
+	fmt.Println("[5] Create a joint account")
+	fmt.Println("Or enter any other number to exit.")
 
 	var choice int
 	fmt.Scanln(&choice)
@@ -124,21 +125,22 @@ func userwhattodo(db *sql.DB) {
 		createjoint(db)
 
 	default:
-		fmt.Println("thank you for using piggy bank!")
+		fmt.Println("Thank you for using Piggy Bank. Goodbye!")
 	}
 
 }
 
 func empwhattodo(db *sql.DB) {
 	fmt.Println("What would you like to do today?")
-	fmt.Println("To check an account balance, choose 1")
-	fmt.Println("to make a deposit, choose 2")
-	fmt.Println("To make a withdrawal, choose 3")
-	fmt.Println("To create a new bank account, choose 4")
-	fmt.Println("To create a new user account, choose 5")
-	fmt.Println("To create a joint account, choose 6")
-	fmt.Println("To view the user data table, choose 7")
-	fmt.Println("To view all joint accounts, choose 8")
+	fmt.Println("[1] To check an account balance")
+	fmt.Println("[2] Make a deposit")
+	fmt.Println("[3] Make a withdrawal")
+	fmt.Println("[4] Create a new bank account")
+	fmt.Println("[5] Create a new user account")
+	fmt.Println("[6] Create a joint account")
+	fmt.Println("[7] View the user data table")
+	fmt.Println("[8] To view all joint accounts")
+	fmt.Println("Or enter any other number to quit.")
 	var response3 int
 	fmt.Scan(&response3)
 
@@ -176,9 +178,13 @@ func empwhattodo(db *sql.DB) {
 func showUserTable(db *sql.DB) {
 	rows, _ := db.Query(`SELECT * FROM user_accounts`)
 
-	fmt.Println("+--------------+------------------+------------+")
-	fmt.Printf("|  uniqname  | FirstName  | LastName  \n")
-	fmt.Println("+--------------+------------------+------------+")
+	fmt.Println("+-------------------------------------------------+")
+	//fmt.Printf("|  uniqname  | FirstName  | LastName  \n")
+	fmt.Printf("%-20v", "Uniqname")
+	fmt.Printf("%-20v", "First Name")
+	fmt.Printf("%-20v", "Last Name")
+	fmt.Println()
+	fmt.Println("+-------------------------------------------------+")
 	for rows.Next() {
 		var uniqname string
 		var userfirst string
@@ -187,10 +193,14 @@ func showUserTable(db *sql.DB) {
 
 		rows.Scan(&uniqname, &userfirst, &userlast, &password)
 		//	fmt.Println(uniqname, userfirst, userlast)
-		fmt.Printf("|  %s  | %s  |  %s \n", uniqname, userfirst, userlast)
+		//fmt.Printf("  %s  | %s  |  %s \n", uniqname, userfirst, userlast)
+		fmt.Printf("%-20v", uniqname)
+		fmt.Printf("%-20v", userfirst)
+		fmt.Printf("%-20v", userlast)
+		fmt.Println()
 
 	}
-	fmt.Println("+--------------+------------------+------------+")
+	fmt.Println("+-------------------------------------------------+")
 
 }
 
@@ -204,6 +214,7 @@ func showAcctsTable(db *sql.DB) {
 		var accttype string
 
 		rows.Scan(&acctnumber, &uniqname, &acctbalance, &accttype)
+		fmt.Println("AccountNumber   Uniqname   Balance   Savings")
 		fmt.Println(acctnumber, uniqname, acctbalance, accttype)
 	}
 }
@@ -227,8 +238,8 @@ func createuseracct(db *sql.DB) {
 	fmt.Println("Please choose a password")
 	fmt.Scan(&password)
 
-	sqlStatement := `INSERT INTO user_accounts values ($1,$2,$3,$4,$5)`
-	db.Exec(sqlStatement, uniqname, userfirst, userlast, password, 0)
+	sqlStatement := `INSERT INTO user_accounts values ($1,$2,$3,$4)`
+	db.Exec(sqlStatement, uniqname, userfirst, userlast, password)
 }
 
 // this function creates a new bank account
@@ -309,7 +320,7 @@ func withdrawal(db *sql.DB) {
 	if withdrawamt > acctbalance {
 		fmt.Println(" Oink Oink! You don't have enough funds.")
 	} else {
-		newbalance := withdrawamt + acctbalance
+		newbalance := acctbalance - withdrawamt
 		db.Exec("UPDATE bank_accounts SET acctbalance = $1 WHERE acctnumber = $2", newbalance, searchvalue)
 		fmt.Println("Your remaining account balance is", newbalance)
 	}
