@@ -59,7 +59,7 @@ func startup(db *sql.DB) {
 	fmt.Println("Hi there! Are you a user or an employee?")
 	//fmt.Println("Enter 1 for employee and 2 for customer")
 
-	fmt.Println("Enter you choice.")
+	fmt.Println("Enter your choice.")
 	fmt.Println("[1] Employee")
 	fmt.Println("[2] Customer")
 
