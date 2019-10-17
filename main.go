@@ -28,11 +28,17 @@ func main() {
 	}
 
 	ping(db)
-	showUserTable(db)
-	showAcctsTable(db)
+	startup(db)
+	//showUserTable(db)
+	//showAcctsTable(db)
+	//printjointaccts(db)
 	//userauth(db)
 	//createbankacct(db)
 	//deposit(db)
+	//createuseracct(db)
+	//createjoint(db)
+	//jointdeposit(db)
+	//employeeauth(db)
 }
 
 func ping(db *sql.DB) {
@@ -44,21 +50,151 @@ func ping(db *sql.DB) {
 	fmt.Println("Successfully connected!")
 }
 
-//this function prints out all the values in the user accounts tabel except password
+//first ask user or employee?
+//if employee, log in
+// if user, exisiting or create new?
+//have users log in, then do user whattodo
+
+func startup(db *sql.DB) {
+	fmt.Println("Hi there! Are you a user or an employee?")
+	//fmt.Println("Enter 1 for employee and 2 for customer")
+
+	fmt.Println("Enter you choice.")
+	fmt.Println("[1] Employee")
+	fmt.Println("[2] Customer")
+
+	var response1 int
+	var response2 int
+	fmt.Scan(&response1)
+
+	if response1 == 1 {
+		hold := employeeauth(db)
+		if hold == 1 {
+			fmt.Println("Logged in successfully")
+			empwhattodo(db)
+		} else {
+			fmt.Println("Your login info is incorrect.")
+		}
+	} else if response1 == 2 {
+		fmt.Println("Enter 1 to create a new account or enter 2 to log in.")
+
+		fmt.Scan(&response2)
+		if response2 == 1 {
+			createuseracct(db)
+		} else if response2 == 2 {
+			var hold int
+			hold = userauth(db)
+			if hold == 1 {
+				fmt.Println("Logged in successfully")
+				userwhattodo(db)
+			} else {
+				fmt.Println("Your login info is incorrect.")
+			}
+		}
+	}
+
+}
+
+func userwhattodo(db *sql.DB) {
+
+	fmt.Println("What would you like to do today?")
+	fmt.Println("To check your account balance, choose 1")
+	fmt.Println("to make a deposit, choose 2")
+	fmt.Println("To make a withdrawal, choose 3")
+	fmt.Println("To open a new account, choose 4")
+	fmt.Println("To create a joint account, choose 5")
+
+	var choice int
+	fmt.Scanln(&choice)
+
+	switch choice {
+	case 1:
+		getacctbalance(db)
+
+	case 2:
+		deposit(db)
+
+	case 3:
+		withdrawal(db)
+
+	case 4:
+		createbankacct(db)
+
+	case 5:
+		createjoint(db)
+
+	default:
+		fmt.Println("thank you for using piggy bank!")
+	}
+
+}
+
+func empwhattodo(db *sql.DB) {
+	fmt.Println("What would you like to do today?")
+	fmt.Println("To check an account balance, choose 1")
+	fmt.Println("to make a deposit, choose 2")
+	fmt.Println("To make a withdrawal, choose 3")
+	fmt.Println("To create a new bank account, choose 4")
+	fmt.Println("To create a new user account, choose 5")
+	fmt.Println("To create a joint account, choose 6")
+	fmt.Println("To view the user data table, choose 7")
+	fmt.Println("To view all joint accounts, choose 8")
+	var response3 int
+	fmt.Scan(&response3)
+
+	switch response3 {
+	case 1:
+		getacctbalance(db)
+
+	case 2:
+		deposit(db)
+
+	case 3:
+		withdrawal(db)
+
+	case 4:
+		createbankacct(db)
+
+	case 5:
+		createuseracct(db)
+
+	case 6:
+		createjoint(db)
+
+	case 7:
+		showUserTable(db)
+
+	case 8:
+		showAcctsTable(db)
+
+	default:
+		fmt.Println("Thank you for using Piggy Bank.")
+	}
+}
+
+//this function prints out all the values in the user accounts table except password
 func showUserTable(db *sql.DB) {
-	rows, _ := db.Query("SELECT * FROM user_accounts")
+	rows, _ := db.Query(`SELECT * FROM user_accounts`)
+
+	fmt.Println("+--------------+------------------+------------+")
+	fmt.Printf("|  uniqname  | FirstName  | LastName  \n")
+	fmt.Println("+--------------+------------------+------------+")
 	for rows.Next() {
 		var uniqname string
 		var userfirst string
 		var userlast string
 		var password string
-		var funds float64
 
-		rows.Scan(&uniqname, &userfirst, &userlast, &password, &funds)
-		fmt.Println(uniqname, userfirst, userlast, funds)
+		rows.Scan(&uniqname, &userfirst, &userlast, &password)
+		//	fmt.Println(uniqname, userfirst, userlast)
+		fmt.Printf("|  %s  | %s  |  %s \n", uniqname, userfirst, userlast)
+
 	}
+	fmt.Println("+--------------+------------------+------------+")
+
 }
 
+//This is a function that prints out all the values in the bank accounts table
 func showAcctsTable(db *sql.DB) {
 	rows, _ := db.Query(`SELECT * FROM bank_accounts`)
 	for rows.Next() {
@@ -72,28 +208,8 @@ func showAcctsTable(db *sql.DB) {
 	}
 }
 
-/* func whattodo() {
-	fmt.Println("What would you like to do today?")
-	fmt.Println("To check your account balance, choose 1")
-	fmt.Println("to make a deposit, choose 2")
-	fmt.Println("To make a withdrawal, choose 3")
-	fmt.Println("To open a new account, choose 4")
-	fmt.Println("To transfer funds between accounts, choose 5")
-
-	var choice int
-	fmt.Scanln(&choice)
-
-	switch choice {
-	case 1:
-		createacct(db)
-	}
-
-	fmt.Println("thank you for using piggy bank!")
-}
-*/
-
 //this is a function that creates user accounts
-func createacct(db *sql.DB) {
+func createuseracct(db *sql.DB) {
 	var uniqname string
 	var userfirst string
 	var userlast string
@@ -125,7 +241,7 @@ func createbankacct(db *sql.DB) {
 	acctbalance := 0
 
 	var accttype string
-	fmt.Println("What kind of account is this? ex. 'checking'")
+	fmt.Println("Let's name this piggy! What is this account for? ex. 'checking'")
 	fmt.Scan(&accttype)
 
 	sqlStatement := `INSERT INTO bank_accounts values($1,$2,$3,$4)`
@@ -137,8 +253,6 @@ func createbankacct(db *sql.DB) {
 }
 
 // generates a pseudo-random number
-//find a way to put this into the acountid in bank accounts table
-
 func getacctnum() string {
 	rand.Seed(time.Now().UnixNano())
 	var num int
@@ -151,7 +265,7 @@ func getacctnum() string {
 
 //deposit is a function that will ask for an account number, get its balance, and then add to it
 func deposit(db *sql.DB) {
-	fmt.Println("hello. Please enter an account number")
+	fmt.Println("Howdy! Let's make a deposit! Please enter an account number")
 	var searchvalue string
 	fmt.Scanln(&searchvalue)
 
@@ -165,30 +279,61 @@ func deposit(db *sql.DB) {
 	}
 
 	var depositamt float64
-	fmt.Println("how much would you like to deposit in this account?")
+	fmt.Println("How much would you like to deposit in this account?")
 	fmt.Scan(&depositamt)
 
 	newbalance := depositamt + acctbalance
 	db.Exec("UPDATE bank_accounts SET acctbalance = $1 WHERE acctnumber = $2", newbalance, searchvalue)
-	fmt.Println("Your new account balance is ", newbalance)
+	fmt.Println("Way to go! Your new account balance is ", newbalance)
 }
 
-/*
-//this function looks up an account number and returns an account balance
-func getacctbalance() {
-	fmt.Println("Please enter an account number")
-	var givenacctnum string
-	fmt.Scan(&givenacctnum)
-	sqlcommand := db.Query(`select acctbalance from bank_accounts where acctnumber = givenacctnum`)
-	for sqlcommand.Next() {
+//This function asks for an account number, returns its balance, and then takes some money out of it
+func withdrawal(db *sql.DB) {
+	fmt.Println("Howdy! Please enter your account number to make a withdrawal.")
+	var searchvalue string
+	fmt.Scanln(&searchvalue)
 
+	row := db.QueryRow("SELECT acctbalance FROM bank_accounts WHERE acctnumber = $1", searchvalue)
+
+	var acctbalance float64
+	err := row.Scan(&acctbalance)
+	fmt.Println("Your previous balance was ", acctbalance)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var withdrawamt float64
+	fmt.Println("How much would you like to withdraw from this account?")
+	fmt.Scan(&withdrawamt)
+
+	if withdrawamt > acctbalance {
+		fmt.Println(" Oink Oink! You don't have enough funds.")
+	} else {
+		newbalance := withdrawamt + acctbalance
+		db.Exec("UPDATE bank_accounts SET acctbalance = $1 WHERE acctnumber = $2", newbalance, searchvalue)
+		fmt.Println("Your remaining account balance is", newbalance)
+	}
+
+}
+
+//this function looks up an account number and returns an account balance
+func getacctbalance(db *sql.DB) {
+	fmt.Println("Please enter an account number")
+	var searchvalue string
+	fmt.Scanln(&searchvalue)
+
+	row := db.QueryRow("SELECT acctbalance FROM bank_accounts WHERE acctnumber = $1", searchvalue)
+
+	var acctbalance float64
+	err := row.Scan(&acctbalance)
+	fmt.Println("Your account balance is ", acctbalance)
+	if err != nil {
+		fmt.Println(err)
 	}
 }
-*/
-//Any function to deposit or withdraw should call this
 
 //this is a function to check your login info
-func userauth(db *sql.DB) {
+func userauth(db *sql.DB) int {
 	var collectuniqname string
 	var collectpassword string
 
@@ -207,13 +352,140 @@ func userauth(db *sql.DB) {
 		var userfirst string
 		var userlast string
 		var password string
-		var funds float64
 
-		err = rows.Scan(&uniqname, &userfirst, &userlast, &password, &funds)
+		err = rows.Scan(&uniqname, &userfirst, &userlast, &password)
 		if err != nil {
 			fmt.Println("Error scanning row", err)
 			continue
 		}
 		fmt.Println("Welcome,", uniqname)
+		return 1
+	}
+	return -1
+}
+
+//createjoint creates a new joint account for two users
+func createjoint(db *sql.DB) {
+	var holduniqname1 string
+	var holduniqname2 string
+	var holdacctname string
+
+	fmt.Println("To create a joint account, please enter the uniqnames of each account holder.")
+	fmt.Println("Uniqname of user 1: ")
+	fmt.Scan(&holduniqname1)
+	fmt.Println("Uniqname of user 2: ")
+	fmt.Scan(&holduniqname2)
+
+	acctnumber := getacctnum()
+	acctbalance := 0
+
+	fmt.Println("Let's name this account! What is this account for? ex 'savings'")
+	fmt.Scan(&holdacctname)
+
+	sqlStatement := `INSERT INTO joint_accounts values($1,$2,$3,$4,$5)`
+	_, err := db.Exec(sqlStatement, acctnumber, holduniqname1, holduniqname2, acctbalance, holdacctname)
+
+	if err != nil {
+		fmt.Print("An error occurred creating your account.", err)
+	}
+}
+
+//this function prints the joint accounts table
+func printjointaccts(db *sql.DB) {
+	rows, _ := db.Query(`SELECT * FROM joint_accounts`)
+	for rows.Next() {
+		var acctnumber string
+		var uniqname1 string
+		var uniqname2 string
+		var acctbalance float64
+		var acctname string
+
+		rows.Scan(&acctnumber, &uniqname1, &uniqname2, &acctbalance, &acctname)
+		fmt.Println(acctnumber, uniqname1, uniqname2, acctbalance, acctname)
+	}
+}
+
+//jointdeposit is a function that will ask for an account number, get its balance, and then add to it
+func jointdeposit(db *sql.DB) {
+	fmt.Println("Howdy, Partners! Let's make a deposit! Please enter your account number")
+	var searchvalue string
+	fmt.Scanln(&searchvalue)
+
+	row := db.QueryRow("SELECT acctbalance FROM joint_accounts WHERE acctnumber = $1", searchvalue)
+
+	var acctbalance float64
+	err := row.Scan(&acctbalance)
+	fmt.Println("Your previous balance was ", acctbalance)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var depositamt float64
+	fmt.Println("How much would you like to deposit in this account?")
+	fmt.Scan(&depositamt)
+
+	newbalance := depositamt + acctbalance
+	db.Exec("UPDATE joint_accounts SET acctbalance = $1 WHERE acctnumber = $2", newbalance, searchvalue)
+	fmt.Println("Way to go! Your new account balance is ", newbalance)
+}
+
+//this is a function to check employee login info
+func employeeauth(db *sql.DB) int {
+	var collectempnumber string
+	var collectpassword string
+
+	fmt.Print("Employee Number:")
+	fmt.Scan(&collectempnumber)
+
+	fmt.Print("Employee password:")
+	fmt.Scan(&collectpassword)
+
+	rows, err := db.Query("SELECT * FROM employee_info WHERE emp_number = $1 AND emp_password = $2", collectempnumber, collectpassword)
+	if err != nil {
+		panic(err)
+	}
+	for rows.Next() {
+		var emp_number string
+		var emp_first string
+		var emp_last string
+		var emp_password string
+		var manager bool
+
+		err = rows.Scan(&emp_number, &emp_first, &emp_last, &emp_password, &manager)
+		if err != nil {
+			fmt.Println("Error scanning row", err)
+			continue
+		}
+		fmt.Println("Welcome,", emp_first)
+		return 1
+	}
+	return -1
+}
+
+//This function asks for a joint account number, returns its balance, and then takes some money out of it
+func jointwithdraw(db *sql.DB) {
+	fmt.Println("Howdy Partners! Please enter your account number to make a withdrawal.")
+	var searchvalue string
+	fmt.Scanln(&searchvalue)
+
+	row := db.QueryRow("SELECT acctbalance FROM joint_accounts WHERE acctnumber = $1", searchvalue)
+
+	var acctbalance float64
+	err := row.Scan(&acctbalance)
+	fmt.Println("Your current balance is ", acctbalance)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var withdrawamt float64
+	fmt.Println("How much would you like to withdraw from this account?")
+	fmt.Scan(&withdrawamt)
+
+	if withdrawamt > acctbalance {
+		fmt.Println(" Oink oink! You don't seem to have enough funds for this transaction.")
+	} else {
+		newbalance := withdrawamt + acctbalance
+		db.Exec("UPDATE joint_accounts SET acctbalance = $1 WHERE acctnumber = $2", newbalance, searchvalue)
+		fmt.Println("Your remaining account balance is", newbalance)
 	}
 }
